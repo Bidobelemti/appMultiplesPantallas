@@ -41,12 +41,9 @@ namespace appMultiplesPantallas
             {
                 conn.Open();
                 DataSet ds = new DataSet();
-                //endicamos la consulta en SQL
                 SqlDataAdapter da = new SqlDataAdapter("SELECT nombre_cli FROM Clientes ", conn);
-                //se indica el nombre de la tabla
                 da.Fill(ds, "Clientes");
                 cmbClientes.DataSource = ds.Tables[0].DefaultView;
-                //se especifica el campo de la tabla
                 cmbClientes.ValueMember = "nombre_cli";
                 conn.Close();
                 }
@@ -67,7 +64,7 @@ namespace appMultiplesPantallas
                     SqlDataReader reader = comm.ExecuteReader();
                     while (reader.Read())
                     {
-                        lstFacturas.Items.Add("\t"+reader["num_factura"].ToString() + "\t\t" + reader["total"].ToString() + "\t\t" + reader["fecha_fact"].ToString());
+                        lstFacturas.Items.Add("\t" + "\t\t" + reader["total"].ToString() + "\t\t" + reader["fecha_fact"].ToString());
                     }
                 }
             }
