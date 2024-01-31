@@ -39,7 +39,7 @@
             this.lstFacturas.FormattingEnabled = true;
             this.lstFacturas.Location = new System.Drawing.Point(78, 32);
             this.lstFacturas.Name = "lstFacturas";
-            this.lstFacturas.Size = new System.Drawing.Size(316, 329);
+            this.lstFacturas.Size = new System.Drawing.Size(349, 329);
             this.lstFacturas.TabIndex = 0;
             // 
             // button1
@@ -69,6 +69,7 @@
             this.cmbClientes.Name = "cmbClientes";
             this.cmbClientes.Size = new System.Drawing.Size(211, 21);
             this.cmbClientes.TabIndex = 4;
+            this.cmbClientes.SelectedIndexChanged += new System.EventHandler(this.cmbClientes_SelectedIndexChanged);
             // 
             // frmCliFacturas
             // 
@@ -80,7 +81,7 @@
             this.Controls.Add(this.button1);
             this.Controls.Add(this.lstFacturas);
             this.Name = "frmCliFacturas";
-            this.Text = "frmCliFacturas";
+            this.Text = "Facturas";
             this.ResumeLayout(false);
 
         }

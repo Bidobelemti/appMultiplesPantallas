@@ -22,6 +22,7 @@ namespace appMultiplesPantallas
         {
             InitializeComponent();
             LlenarCmbClientes();
+            LlenarLstFacturas();
             
         }
 
@@ -29,7 +30,11 @@ namespace appMultiplesPantallas
         {
             Close();
         }
-
+        public void LlenarLstFacturas()
+        {
+            lstFacturas.Items.Clear();
+            lstFacturas.Items.Add("Numero de factura\t\tTotal\t\tFecha");
+        }
         public void LlenarCmbClientes()
         {
             using (SqlConnection conn = new SqlConnection(strConn))
@@ -50,8 +55,27 @@ namespace appMultiplesPantallas
         private void button1_Click(object sender, EventArgs e)
         {
             int userIndex = cmbClientes.SelectedIndex;
-            String userName = cmbClientes.GetItemText(userIndex);
-            Console.WriteLine(userName);
+            string user;
+            object itemSeleccionado = cmbClientes.SelectedItem;
+            user = ((DataRowView)itemSeleccionado)["nombre_cli"].ToString();
+            
+            using (SqlConnection conn = new SqlConnection(strConn))
+            {
+                conn.Open();
+                using (SqlCommand comm = new SqlCommand("SELECT num_factura, total, fecha_fact From Clientes C, Facturas F WHERE nombre_cli = '" + user+"' and C.id_cliente = F.id_cliente", conn))
+                {
+                    SqlDataReader reader = comm.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        lstFacturas.Items.Add("\t"+reader["num_factura"].ToString() + "\t\t" + reader["total"].ToString() + "\t\t" + reader["fecha_fact"].ToString());
+                    }
+                }
+            }
+        }
+
+        private void cmbClientes_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            LlenarLstFacturas();
         }
     }
 

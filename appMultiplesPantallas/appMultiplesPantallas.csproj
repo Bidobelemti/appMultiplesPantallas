@@ -78,6 +78,9 @@
     <EmbeddedResource Include="frmCliFacturas.resx">
       <DependentUpon>frmCliFacturas.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="frmProdPrecios.resx">
+      <DependentUpon>frmProdPrecios.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
