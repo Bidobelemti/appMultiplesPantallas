@@ -64,7 +64,7 @@ namespace appMultiplesPantallas
                     SqlDataReader reader = comm.ExecuteReader();
                     while (reader.Read())
                     {
-                        lstFacturas.Items.Add("\t" + "\t\t" + reader["total"].ToString() + "\t\t" + reader["fecha_fact"].ToString());
+                        lstFacturas.Items.Add("\t" + reader["num_factura"].ToString() + "\t\t" + reader["total"].ToString() + "\t\t" + reader["fecha_fact"].ToString());
                     }
                 }
             }

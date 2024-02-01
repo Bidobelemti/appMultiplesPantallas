@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -78,7 +79,6 @@ namespace appMultiplesPantallas
             txtDireccion.Enabled = true;
             txtTelefono.Enabled = true;
             txtFecha.Enabled = true;
-            txtID.Enabled = true;
             txtNombre.Enabled = true;
         }
         public void LimpiarTxt()
@@ -114,13 +114,61 @@ namespace appMultiplesPantallas
                 conn.Open();
                 object itemSeleccionado = cmbClientes.SelectedItem;
                 string user = ((DataRowView)itemSeleccionado)["nombre_cli"].ToString();
-                string strEditar = "UPDATE Clientes SET dir_cli="+(string) txtDireccion.Text+" WHERE nombre_cli'"+user+"'";
-                Console.WriteLine(txtDireccion.Text);
-                using (SqlCommand comm = new SqlCommand(strEditar, conn))
+                //Updates a realizar
+                string commUpdateDir = "UPDATE Clientes SET dir_cli=@direccion WHERE nombre_cli=@nombre";
+                string commUpdateNom = "UPDATE Clientes SET nombre_cli=@nombre_cli WHERE nombre_cli=@nombre";
+                //string commUpdateTel = "UPDATE Clientes SET tel_cli=@telefono WHERE nombre_cli=@nombre";
+                string commUpdateTel = "UPDATE Clientes SET tel_cli=@telefono WHERE nombre_cli=@nombre AND (tel_cli <> @telefono OR tel_cli IS NULL OR @telefono IS NULL)";
+                string commUpdateFec = "UPDATE Clientes SET fecha_nac=@fecha WHERE nombre_cli=@nombre";
+
+                //Conexion a BD
+
+                using (SqlCommand comm = new SqlCommand(commUpdateDir, conn))
                 {
                     comm.CommandType = CommandType.Text;
+                    comm.Parameters.AddWithValue("@direccion", txtDireccion.Text);
+                    comm.Parameters.AddWithValue("@nombre", user);
                     int rowAffect = comm.ExecuteNonQuery();
+                    Console.WriteLine(rowAffect);
                 }
+                
+                using (SqlCommand comm = new SqlCommand(commUpdateNom, conn))
+                {
+                    comm.CommandType = CommandType.Text;
+                    comm.Parameters.AddWithValue("@nombre_cli", txtNombre.Text);
+                    comm.Parameters.AddWithValue("@nombre", user);
+                    int rowAffect = comm.ExecuteNonQuery();
+                    Console.WriteLine(rowAffect);
+                }
+
+                using (SqlCommand comm = new SqlCommand(commUpdateTel, conn))
+                {
+                    comm.CommandType = CommandType.Text;
+                    comm.Parameters.AddWithValue("@telefono", txtTelefono.Text);
+                    comm.Parameters.AddWithValue("@nombre", user);
+                    int rowAffect = comm.ExecuteNonQuery();
+                    Console.WriteLine(rowAffect);
+                }
+
+                using (SqlCommand comm = new SqlCommand(commUpdateFec, conn))
+                {
+                    comm.CommandType = CommandType.Text;
+                    if (DateTime.TryParseExact(txtFecha.Text, "d/M/yyyy H:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime fecha))
+                    {
+                        comm.Parameters.AddWithValue("@fecha", fecha);
+                        comm.Parameters.AddWithValue("@nombre", user);
+                        int rowAffect = comm.ExecuteNonQuery();
+                        Console.WriteLine(rowAffect);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Formato de fecha no válido. El formato debe ser 'd/M/yyyy H:mm:ss'.");
+                        // Tratar el caso en el que la fecha no es válida.
+                    }
+                }
+                
+
+
                 conn.Close();
             }
         }
