@@ -63,7 +63,9 @@ namespace appMultiplesPantallas
                         txtNombre.AppendText(reader["nombre_cli"].ToString());
                         txtDireccion.AppendText(reader["dir_cli"].ToString());
                         txtTelefono.AppendText(reader["tel_cli"].ToString());
-                        txtFecha.AppendText(reader["fecha_nac"].ToString());
+
+                        DateTime fecha = reader.GetDateTime(4);
+                        txtFecha.AppendText($"{fecha.Year}/{fecha.Month}/{fecha.Day}");
                     }
                     ActivarEdicion();
 
@@ -112,58 +114,43 @@ namespace appMultiplesPantallas
             using (SqlConnection conn = new SqlConnection(strConn))
             {
                 conn.Open();
+
+                // Declaracion de campos 
+
+                string nombre = txtNombre.Text;
+                string direccion = txtDireccion.Text;
+                string telefono = txtTelefono.Text;
+                string fechaNac = txtFecha.Text;
+
                 object itemSeleccionado = cmbClientes.SelectedItem;
                 string user = ((DataRowView)itemSeleccionado)["nombre_cli"].ToString();
+
                 //Updates a realizar
-                string commUpdateDir = "UPDATE Clientes SET dir_cli=@direccion WHERE nombre_cli=@nombre";
-                string commUpdateNom = "UPDATE Clientes SET nombre_cli=@nombre_cli WHERE nombre_cli=@nombre";
+                string commUpdateDir = $"UPDATE Clientes SET dir_cli='{direccion}' WHERE nombre_cli='{user}';";
+
                 //string commUpdateTel = "UPDATE Clientes SET tel_cli=@telefono WHERE nombre_cli=@nombre";
-                string commUpdateTel = "UPDATE Clientes SET tel_cli=@telefono WHERE nombre_cli=@nombre AND (tel_cli <> @telefono OR tel_cli IS NULL OR @telefono IS NULL)";
-                string commUpdateFec = "UPDATE Clientes SET fecha_nac=@fecha WHERE nombre_cli=@nombre";
+                string commUpdateTel = $"UPDATE Clientes SET tel_cli='{telefono}' WHERE nombre_cli='{user}';";
+                string commUpdateFec = $"UPDATE Clientes SET fecha_nac='{fechaNac}' WHERE nombre_cli='{user}';";
+                string commUpdateNom = $"UPDATE Clientes SET nombre_cli='{nombre}' WHERE nombre_cli='{user}';";
+
+                // Consulta total
+                string commTotal = $"{commUpdateDir}{commUpdateTel}{commUpdateFec}{commUpdateNom}";
 
                 //Conexion a BD
 
-                using (SqlCommand comm = new SqlCommand(commUpdateDir, conn))
+                using (SqlCommand comm = new SqlCommand(commTotal, conn))
                 {
-                    comm.CommandType = CommandType.Text;
-                    comm.Parameters.AddWithValue("@direccion", txtDireccion.Text);
-                    comm.Parameters.AddWithValue("@nombre", user);
                     int rowAffect = comm.ExecuteNonQuery();
-                    Console.WriteLine(rowAffect);
-                }
-                
-                using (SqlCommand comm = new SqlCommand(commUpdateNom, conn))
-                {
-                    comm.CommandType = CommandType.Text;
-                    comm.Parameters.AddWithValue("@nombre_cli", txtNombre.Text);
-                    comm.Parameters.AddWithValue("@nombre", user);
-                    int rowAffect = comm.ExecuteNonQuery();
-                    Console.WriteLine(rowAffect);
-                }
-
-                using (SqlCommand comm = new SqlCommand(commUpdateTel, conn))
-                {
-                    comm.CommandType = CommandType.Text;
-                    comm.Parameters.AddWithValue("@telefono", txtTelefono.Text);
-                    comm.Parameters.AddWithValue("@nombre", user);
-                    int rowAffect = comm.ExecuteNonQuery();
-                    Console.WriteLine(rowAffect);
-                }
-
-                using (SqlCommand comm = new SqlCommand(commUpdateFec, conn))
-                {
-                    comm.CommandType = CommandType.Text;
-                    if (DateTime.TryParseExact(txtFecha.Text, "d/M/yyyy H:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime fecha))
+                    if (rowAffect == 0) 
                     {
-                        comm.Parameters.AddWithValue("@fecha", fecha);
-                        comm.Parameters.AddWithValue("@nombre", user);
-                        int rowAffect = comm.ExecuteNonQuery();
-                        Console.WriteLine(rowAffect);
+                        Console.WriteLine("No se ejecutó correctamente");
+                    } else if (rowAffect == 1) 
+                    {
+                        Console.WriteLine("Se ejecutó CORRECTAMENTE");
                     }
                     else
                     {
-                        Console.WriteLine("Formato de fecha no válido. El formato debe ser 'd/M/yyyy H:mm:ss'.");
-                        // Tratar el caso en el que la fecha no es válida.
+                        Console.WriteLine("IMPOSIBLE DE EJECUTAR!");
                     }
                 }
                 
